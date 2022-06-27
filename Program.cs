@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PropertiesListings.Data;
 using PropertiesListings.Data.Repo;
 using PropertiesListings.DataContext;
+using PropertiesListings.Helpers;
 using PropertiesListings.Interfaces;
 using SignalRWeb.HubConfig;
 
@@ -30,6 +31,7 @@ builder.Services.AddCors(options =>
         );
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
 /*Add SignalR*/
 builder.Services.AddSignalR(options =>
