@@ -13,6 +13,16 @@ namespace PropertiesListings.Data.Repo
             _context = context;
         }
 
+        public async Task<City>FindCity(int cityId)
+        {
+            return await _context.Cities.FindAsync(cityId);
+        }
+
+        public void UpdateCity(City city)
+        {
+            _context.Cities.Update(city);
+        }
+
         void ICityRepository.AddCity(City city)
         {
             _context.AddAsync(city);
@@ -29,14 +39,6 @@ namespace PropertiesListings.Data.Repo
             return await _context.Cities.ToListAsync();
         }
 
-        Task ICityRepository.GetCity(int cityId)
-        {
-            throw new NotImplementedException();
-        }
-
-        void ICityRepository.UpdateCity(int id, City city)
-        {
-            throw new NotImplementedException();
-        }
+       
     }
 }

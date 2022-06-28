@@ -22,13 +22,31 @@ namespace SignalRWeb.Controllers
             this.mapper = mapper;
         }
 
-        //Get city
+        //Get all cities
         [HttpGet]
         public async Task<ActionResult> GetCities()
         {   
             var cities = await uow.CityRepository.GetCitiesAync();
             var citiesDto = mapper.Map<IEnumerable<CityDto>>(cities);
             return Ok(citiesDto);
+        }
+        //Get single city
+        [HttpGet("{id}")]
+        public async Task<ActionResult>GetCity(int id)
+        {
+            var ct = await uow.CityRepository.FindCity(id);
+            var cityDto = mapper.Map<CityDto>(ct);
+            return Ok(cityDto);
+        }
+
+        //Update city
+        [HttpPut("{id}")]
+        public async Task<ActionResult>UpdateCity(int id, CityUpdateDto cityUpdateDto)
+        {
+            var cityFromDb = await uow.CityRepository.FindCity(id);
+            mapper.Map(cityUpdateDto, cityFromDb);
+            await uow.SaveAsync();
+            return StatusCode(200);
         }
         //add a city
         [HttpPost]

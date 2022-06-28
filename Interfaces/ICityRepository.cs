@@ -5,9 +5,9 @@ namespace PropertiesListings.Interfaces
     public interface ICityRepository
     {
         Task<IEnumerable<City>> GetCitiesAync();
-        Task GetCity(int cityId);
+        Task<City>FindCity(int cityId);
+        void UpdateCity(City city);
         void AddCity(City city);
         void DeleteCity(int id);
-        void UpdateCity(int id, City city);
     }
 }
