@@ -89,7 +89,9 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+app.UseAuthentication();
 app.UseRouting();
+app.UseAuthorization();
 
 //configure cors policies
 app.UseCors("AllowAllHeaders");

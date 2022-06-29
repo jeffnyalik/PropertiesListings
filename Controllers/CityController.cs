@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using PropertiesListings.Models;
 
 namespace SignalRWeb.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
 
@@ -23,6 +25,7 @@ namespace SignalRWeb.Controllers
         }
 
         //Get all cities
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult> GetCities()
         {   
