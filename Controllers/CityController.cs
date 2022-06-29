@@ -35,6 +35,10 @@ namespace SignalRWeb.Controllers
         public async Task<ActionResult>GetCity(int id)
         {
             var ct = await uow.CityRepository.FindCity(id);
+            if(ct == null)
+            {
+                return BadRequest();
+            }
             var cityDto = mapper.Map<CityDto>(ct);
             return Ok(cityDto);
         }
@@ -44,6 +48,10 @@ namespace SignalRWeb.Controllers
         public async Task<ActionResult>UpdateCity(int id, CityUpdateDto cityUpdateDto)
         {
             var cityFromDb = await uow.CityRepository.FindCity(id);
+            if(cityFromDb == null)
+            {
+                return BadRequest("Unknown error occured");
+            }
             mapper.Map(cityUpdateDto, cityFromDb);
             await uow.SaveAsync();
             return StatusCode(200);
