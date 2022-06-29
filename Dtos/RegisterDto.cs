@@ -8,6 +8,7 @@ namespace PropertiesListings.Dtos
         [StringLength(100)]
         [EmailAddress]
         public string Email { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength =8)]
