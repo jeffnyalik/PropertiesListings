@@ -8,6 +8,7 @@ using PropertiesListings.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using PropertiesListings.Services;
 
 namespace PropertiesListings.Controllers
 {
@@ -18,13 +19,15 @@ namespace PropertiesListings.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration configuration;
+        private readonly IMailService mailService;
 
         public AuthenticationController(UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+            RoleManager<IdentityRole> roleManager, IConfiguration configuration, IMailService mailService)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.configuration = configuration;
+            this.mailService = mailService;
         }
         //Register user
         [HttpPost]
@@ -59,6 +62,7 @@ namespace PropertiesListings.Controllers
                     new UserManagerResponse { Status = "Error", Message = "There is problem creating an account" }
                     );
             }
+
             return Ok(new UserManagerResponse {Status = "Success", Message="Created successfully", IsSuccess = true });
         }
 
@@ -94,11 +98,12 @@ namespace PropertiesListings.Controllers
                     signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                 );
                 string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+               // new MailRequest($"{user.Email}", "New title", "Login authentication done");
                 return Ok(new UserManagerResponse
                 {
                     Message = tokenString,
                     IsSuccess = true,
-                    ExpireDate = token.ValidTo
+                    ExpireDate = token.ValidTo,
                 });
             }
             else
@@ -108,6 +113,8 @@ namespace PropertiesListings.Controllers
                     Message = "Invalid email or password",
                     IsSuccess = false
                 });
+
+                
             }
         }
     }

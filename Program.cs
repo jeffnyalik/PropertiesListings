@@ -8,6 +8,8 @@ using PropertiesListings.Data.Repo;
 using PropertiesListings.DataContext;
 using PropertiesListings.Helpers;
 using PropertiesListings.Interfaces;
+using PropertiesListings.MailSettings;
+using PropertiesListings.Services;
 using SignalRWeb.HubConfig;
 using System.Text;
 
@@ -73,11 +75,24 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
+
+
+
 /*Add SignalR*/
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
 });
+
+//Email config service
+//builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailConfig"));
+/*var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
+                    .Get<EmailConfiguration>();*/
+
+builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("EmailConfiguration"));
+builder.Services.AddTransient<IMailService, MailService>();
+
+//builder.Services.AddSingleton(emailConfig);
 
 var app = builder.Build();
 
@@ -89,7 +104,7 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
-app.UseAuthentication();
+//app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
 
@@ -105,7 +120,7 @@ app.UseEndpoints(endpoints =>
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 
