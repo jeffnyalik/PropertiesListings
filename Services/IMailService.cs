@@ -6,6 +6,7 @@ namespace PropertiesListings.Services
     {
         Task SendEmailAysnc(MailRequest mailRequest);
         Task SendWelcomeEmailAsync(string toEmail, string subject, string message);
+        Task SendOnboardingMessage(string toEmail, string subject, string message);
         Task SendEmailWithAttachmentAsync(MailRequest mailRequest);
 
     }

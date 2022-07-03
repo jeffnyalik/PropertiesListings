@@ -51,5 +51,20 @@ namespace PropertiesListings.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        //Onboarding Welcoming message
+        [HttpPost("onboarding")]
+        public async Task<IActionResult> SendOnboardingMessage()
+        {
+            try
+            {
+                await mailService.SendOnboardingMessage("jeffnyak@gmail.com", "Karibu", "Karibu kaka");
+                return Ok();
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        }
     }
 }

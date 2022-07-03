@@ -65,6 +65,29 @@ namespace PropertiesListings.Services
             smtp.Disconnect(true);
         }
 
+        public async Task SendOnboardingMessage(string toEmail, string subject, string message)
+        {
+            var mails = new MimeMessage();
+            mails.Sender = MailboxAddress.Parse(_emailConfiguration.From);
+            mails.To.Add(MailboxAddress.Parse(toEmail));
+            mails.Subject = "Welcome to the Property Listings App";
+
+            string FilePath = Directory.GetCurrentDirectory() + "\\Templates\\Welcome.html";
+            string TemplateText = File.ReadAllText(FilePath);
+            TemplateText = string.Format(TemplateText);
+
+            var builder = new BodyBuilder();
+            builder.HtmlBody = TemplateText;
+            mails.Body = builder.ToMessageBody();
+
+            using var smtp = new SmtpClient();
+            smtp.Connect(_emailConfiguration.Host, _emailConfiguration.Port, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_emailConfiguration.UserName, _emailConfiguration.Password);
+            await smtp.SendAsync(mails);
+            smtp.Disconnect(true);
+            smtp.Dispose();
+        }
+
         public async Task SendWelcomeEmailAsync(string toEmail, string subject, string content)
         {
             var mails = new MimeMessage();
