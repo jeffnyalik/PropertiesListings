@@ -5,7 +5,8 @@ namespace PropertiesListings.Services
     public interface IMailService
     {
         Task SendEmailAysnc(MailRequest mailRequest);
-        Task SendWelcomeEmailAsync(MailRequest sendWelcomeRequest);
+        Task SendWelcomeEmailAsync(string toEmail, string subject, string message);
+        Task SendEmailWithAttachmentAsync(MailRequest mailRequest);
 
     }
 }

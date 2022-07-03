@@ -5,10 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using PropertiesListings.Authentication;
 using PropertiesListings.Dtos;
 using PropertiesListings.Helpers;
+using PropertiesListings.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using PropertiesListings.Services;
+
 
 namespace PropertiesListings.Controllers
 {
@@ -20,14 +21,19 @@ namespace PropertiesListings.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration configuration;
         private readonly IMailService mailService;
+        
 
-        public AuthenticationController(UserManager<ApplicationUser> userManager, 
-            RoleManager<IdentityRole> roleManager, IConfiguration configuration, IMailService mailService)
+        public AuthenticationController(
+            UserManager<ApplicationUser> userManager, 
+            RoleManager<IdentityRole> roleManager, IConfiguration configuration,
+            IMailService mailService
+            )
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.configuration = configuration;
             this.mailService = mailService;
+            
         }
         //Register user
         [HttpPost]
@@ -63,6 +69,7 @@ namespace PropertiesListings.Controllers
                     );
             }
 
+            await mailService.SendWelcomeEmailAsync(user.Email, "Register", "Registration is a success");
             return Ok(new UserManagerResponse {Status = "Success", Message="Created successfully", IsSuccess = true });
         }
 
@@ -98,7 +105,7 @@ namespace PropertiesListings.Controllers
                     signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                 );
                 string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-               // new MailRequest($"{user.Email}", "New title", "Login authentication done");
+                await mailService.SendWelcomeEmailAsync(user.Email, "Login-Title", "loggedin successfully");
                 return Ok(new UserManagerResponse
                 {
                     Message = tokenString,
