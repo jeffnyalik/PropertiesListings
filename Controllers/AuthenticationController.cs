@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using PropertiesListings.Authentication;
 using PropertiesListings.Dtos;
@@ -21,7 +22,8 @@ namespace PropertiesListings.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration configuration;
         private readonly IMailService mailService;
-        
+       
+
 
         public AuthenticationController(
             UserManager<ApplicationUser> userManager, 
@@ -69,7 +71,18 @@ namespace PropertiesListings.Controllers
                     );
             }
 
-            await mailService.SendWelcomeEmailAsync(user.Email, "Register", "Registration is a success");
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var param = new Dictionary<string, string?>
+            {
+                {"token", token },
+                {"email", user.Email}
+            };
+            //string Appurl = "https://localhost:7144/api/Authentication/confirmEmail";
+            string ClientUrl = "http://localhost:4200/authentication/email-verify";
+            var callback = QueryHelpers.AddQueryString(ClientUrl, param);
+
+            await mailService.SendWelcomeEmailAsync(user.Email, "Email Confirmation Link", callback);
+
             return Ok(new UserManagerResponse {Status = "Success", Message="Created successfully", IsSuccess = true });
         }
 
@@ -83,8 +96,18 @@ namespace PropertiesListings.Controllers
             if (user == null)
             {
                 return StatusCode(StatusCodes.Status400BadRequest,
-                    new UserManagerResponse { Status = "Error", Message = "User with email does not exist", IsSuccess = false }
+                    new UserManagerResponse { Status = "Error", Message = "User with email does not exist", IsSuccess = false,
+  
+                    }
                     );
+            }
+            if(!await userManager.IsEmailConfirmedAsync(user))
+            {
+                return BadRequest(
+                    new UserManagerResponse { Status ="Error", Message="Email has not been Confirmed", 
+                        IsSuccess = false
+                    }
+                );
             }
 
             var checkPwd = await userManager.CheckPasswordAsync(user, loginDto.Password);
@@ -108,21 +131,40 @@ namespace PropertiesListings.Controllers
                 await mailService.SendWelcomeEmailAsync(user.Email, "Login-Title", "loggedin successfully");
                 return Ok(new UserManagerResponse
                 {
-                    Message = tokenString,
+                    Token = tokenString,
                     IsSuccess = true,
                     ExpireDate = token.ValidTo,
                 });
             }
             else
             {
-                return Ok(new UserManagerResponse
+               
+                return BadRequest(new UserManagerResponse
                 {
-                    Message = "Invalid email or password",
-                    IsSuccess = false
+                    Status = "Error", Message = "Invalid Email or Password", IsSuccess = false
                 });
 
-                
             }
+        }
+
+        //Confirm email
+        [HttpGet("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string email, [FromQuery] string token)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return BadRequest("Invalid Email confirmation Request");
+            }
+
+            var results = await userManager.ConfirmEmailAsync(user, token);
+            if (!results.Succeeded)
+            {
+                string successMessage = "Invalid Email Confirmation Request";
+                return BadRequest(successMessage);
+            }
+
+            return Ok(results);
         }
     }
 }

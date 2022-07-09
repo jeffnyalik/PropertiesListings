@@ -7,5 +7,6 @@
         public string? Status { get; set; }
         //public IEnumerable<string>? errors { get; set; }
         public DateTime? ExpireDate { get; set; }
+        public string?  Token {get;set;}
     }
 }

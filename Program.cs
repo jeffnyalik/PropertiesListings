@@ -9,6 +9,7 @@ using PropertiesListings.DataContext;
 using PropertiesListings.Helpers;
 using PropertiesListings.Interfaces;
 using PropertiesListings.MailSettings;
+using PropertiesListings.Models;
 using PropertiesListings.Services;
 using SignalRWeb.HubConfig;
 using System.Text;
@@ -30,8 +31,26 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedAccount = true;
+    options.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
+
 }).AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddTokenProvider<EmailConfirmationTokenProvider<ApplicationUser>>("emailconfirmation");
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromMinutes(60);
+});
+
+builder.Services.Configure<EmailConfirmationTokenProviderOptions>(options =>
+    options.TokenLifespan = TimeSpan.FromDays(3));
+
+    
+
+
 
 // Authentication
 builder.Services.AddAuthentication(options =>
@@ -85,14 +104,8 @@ builder.Services.AddSignalR(options =>
 });
 
 //Email config service
-//builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailConfig"));
-/*var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
-                    .Get<EmailConfiguration>();*/
-
 builder.Services.Configure<EmailConfiguration>(builder.Configuration.GetSection("EmailConfiguration"));
 builder.Services.AddTransient<IMailService, MailService>();
-
-//builder.Services.AddSingleton(emailConfig);
 
 var app = builder.Build();
 

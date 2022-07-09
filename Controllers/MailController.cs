@@ -58,7 +58,7 @@ namespace PropertiesListings.Controllers
         {
             try
             {
-                await mailService.SendOnboardingMessage("jeffnyak@gmail.com", "Karibu", "Karibu kaka");
+                await mailService.SendOnboardingMessage("jeffnyak@yahoo.com", "Karibu", "Karibu kaka");
                 return Ok();
             }catch(Exception e)
             {
