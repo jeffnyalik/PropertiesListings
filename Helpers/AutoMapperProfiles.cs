@@ -10,6 +10,8 @@ namespace PropertiesListings.Helpers
         {
             CreateMap<City, CityDto>().ReverseMap();
             CreateMap<City, CityUpdateDto>().ReverseMap();
+            CreateMap<Property, PropertyDto>().ReverseMap();
+            CreateMap<Property, PropertyUpdateDto>().ReverseMap();
         }
     }
 }

@@ -11,8 +11,13 @@ namespace PropertiesListings.Data
         {
             _context = context;
         }
+
+        IPropertyRepo IUnitOfWork.PropertyRepository =>
+            new PropertyRepository(_context);
+
         ICityRepository IUnitOfWork.CityRepository =>
             new CityRepository(_context);
+        
 
         public async Task<bool>SaveAsync()
         {

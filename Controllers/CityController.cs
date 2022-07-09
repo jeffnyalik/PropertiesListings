@@ -25,7 +25,7 @@ namespace SignalRWeb.Controllers
         }
 
         //Get all cities
-        [Authorize]
+        
         [HttpGet]
         public async Task<ActionResult> GetCities()
         {   
