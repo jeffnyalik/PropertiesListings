@@ -9,4 +9,4 @@
 4.Email Confirmation and verification with SMTP servers.
 
 ## Here is a sneak preview of the app project using Swagger.
-![](images/property.png)
+![](Images/property.png)
